@@ -685,7 +685,6 @@ KiUpdateSharedTime(
  * platform's performance counter, which is slower but is the only monotonic
  * reading available. It is the counter a thread's turn is charged in.
  */
-static
 ULONG64
 KiReadCycleCounter(VOID)
 {
@@ -1019,7 +1018,7 @@ KiChargeThreadCycleTime(
     Charge = Cycles - Prcb->StartCycles;
     Prcb->StartCycles = Cycles;
 
-    Thread->CycleTime += Charge;
+    InterlockedExchangeAdd64((PLONG64)&Thread->CycleTime, (LONG64)Charge);
     Prcb->CycleTime += Charge;
 
     if (Thread->ApcState.Process != NULL)
